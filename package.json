@@ -15,7 +15,7 @@
   "devDependencies": {
     "semistandard": "^17.0.0",
     "typescript": "^4.5.4",
-    "vite": "^2.9.15"
+    "vite": "^3.2.11"
   },
   "dependencies": {
     "@atproto/api": "^0.13.18",
