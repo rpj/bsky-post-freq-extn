@@ -1,0 +1,25 @@
+{
+  "name": "bsky-post-freq-extn",
+  "author": {
+    "name": "Ryan Joseph",
+    "email": "ryan.joseph@gmail.com"
+  },
+  "repository": {
+    "url": "https://github.com/rpj/bsky-post-freq-extn"
+  },
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc && vite build && node tools/post-build.js",
+    "lint": "npx semistandard --fix **/*.js"
+  },
+  "devDependencies": {
+    "semistandard": "^17.0.0",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.15"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.13.18",
+    "@crxjs/vite-plugin": "^1.0.14",
+    "simple-statistics": "^7.8.7"
+  }
+}
