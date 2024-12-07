@@ -4,7 +4,8 @@
   "description": "Shows a Bluesky profile's posting frequency summary",
   "version": "1.0",
   "action": {
-    "default_icon": "favicon.png"
+    "default_icon": "favicon.png",
+    "default_popup": "src/popup.html"
   },
   "content_scripts": [
     {
@@ -16,5 +17,8 @@
       ],
       "run_at": "document_end"
     }
+  ],
+  "permissions": [
+    "storage"
   ]
 }

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="pico.blue.min.css">
+  <style>
+    body {
+      width: 480px;
+      padding: 1.5em;
+    }
+
+    label small {
+      margin-top: 1em;
+    }
+  </style>
+</head>
+
+<body>
+  <hgroup>
+    <h2>Bluesky Post Frequencies</h2>
+    <p>Settings</p>
+  </hgroup>
+
+  <fieldset>
+    <hr/>
+    <label for="monthsBack">
+      Months back
+      <input type="number" id="monthsBack" size="2" min="1" max="12" style="margin-bottom: 0"/>
+      <small id="monthsBack-helper">
+        How many months back in time to show in the activity graph.
+      </small>
+    </label>
+    <hr/>
+    <label for="includeButton">
+      <input type="checkbox" id="includeButton" />
+      Hide behind button
+      <small id="includeButton-helper">
+        If checked, will initially hide the activity graph behind a button.
+      </small>
+    </label>
+    <hr/>
+  </fieldset>
+  <script src="popup.js"></script>
+</body>
+
+</html>

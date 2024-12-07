@@ -1,0 +1,54 @@
+name: BuildAndRelease
+run-name: Build & release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  CreateFileName:
+    runs-on: ubuntu-24.04
+    outputs:
+      file_name: ${{ steps.create_name.outputs.file_name }}
+      dist_version: ${{ steps.create_name.outputs.dist_version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: create_name
+        run: |
+          app_name=$(node -e "console.log(require('./manifest.json').name.replaceAll(' ', ''))")
+          dist_version=$(cat manifest.json | jq -r .version)-$(git rev-parse --short HEAD)
+          echo "dist_version=${dist_version}" >> "$GITHUB_OUTPUT"
+          echo "file_name=${app_name}_${dist_version}" >> "$GITHUB_OUTPUT"
+  BuildDist:
+    permissions:
+      contents: write
+    needs: [CreateFileName]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: sudo apt -y install jq
+      - run: npm install
+      - run: npm run build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{needs.CreateFileName.outputs.file_name}}
+          path: dist/*
+      - name: Create release artifact
+        run: |
+          cd dist
+          zip -9r ../${{needs.CreateFileName.outputs.file_name}}.zip .
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{needs.CreateFileName.outputs.dist_version}}
+          generate_release_notes: true
+          name: ${{needs.CreateFileName.outputs.dist_version}}
+          files: ${{needs.CreateFileName.outputs.file_name}}.zip
