@@ -17,16 +17,7 @@ export const paginateAll = async <T extends { cursor?: string }>(
   return results;
 };
 
-export const getUserCreatedAt = async (actor: string) => {
-  // source: https://github.com/mimonelu/klearsky/blob/079746c1c1a03d3a9f0961bdb69bb223dcb106c3/src/composables/main-state.ts#L98
-  const log = await fetch(`https://plc.directory/${actor}/log/audit`);
-  const logJson = await log.json();
-  const createdAt = logJson[0]?.createdAt;
-
-  return createdAt;
-};
-
-export const getData = async (agent: bsky.AtpAgent, actor: string) => {
+export const getData = async (agent: bsky.AtpAgent, actor: string, monthsBackDate: Date) => {
   // source: https://github.com/bluesky-social/atproto/blob/efb1cac2bfc8ccb77c0f4910ad9f3de7370fbebb/packages/bsky/tests/views/author-feed.test.ts#L94
   const paginator = async (cursor?: string) => {
     const res = await agent.getAuthorFeed({
@@ -37,13 +28,9 @@ export const getData = async (agent: bsky.AtpAgent, actor: string) => {
     return res.data;
   };
 
-  const paginatedAll = await paginateAll(paginator);
-
-  const posts: object[] = [];
-
-  paginatedAll.forEach((res) => {
+  const posts: object[] = (await paginateAll(paginator)).reduce((a, res) => {
     if (typeof res.feed[0] !== 'undefined') {
-      posts.push(
+      (a as object[]).push(
         ...res.feed.map((e) => ({
           text: (e.post.record as any).text,
           uri: e.post.uri.replace('app.bsky.feed.', '').replace('at://', 'https://bsky.app/profile/'),
@@ -57,7 +44,12 @@ export const getData = async (agent: bsky.AtpAgent, actor: string) => {
         })),
       );
     }
-  });
+
+    return a;
+  }, [])
+    // as feed pages are not sorted by createdAt, we must collect *everything* before we can
+    // filter by the chosen time window, else we could miss a significant number of posts
+    .filter(({ createdAt }) => new Date(createdAt) >= monthsBackDate);
 
   const groupedPosts = posts.reduce((acc: any, obj: any) => {
     const key = obj.createdAt.slice(0, 10);
@@ -71,11 +63,9 @@ export const getData = async (agent: bsky.AtpAgent, actor: string) => {
   // i don't need the outer object, i just need an array with the values
   const data = Object.values(groupedPosts);
   const max = Math.max(...data.map((o: any) => o.count));
-  const createdAt = await getUserCreatedAt(actor);
 
   return {
     data,
     max,
-    createdAt,
   };
 };
