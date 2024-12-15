@@ -34,11 +34,15 @@ async function queryFeed(targetDiv) {
   newDiv.style = `margin: 2em 1em 2em 1em; font-size: 0.8em; color: ${currentTheme === 'light' ? 'rgb(66, 87, 108)' : 'white'}`;
   targetDiv.insertAdjacentElement('afterend', newDiv);
 
+  const now = new Date();
   const handle = new URL(window.location).pathname.slice(1).split('/').slice(-1)[0];
   const intervalHandle = dotDotDot(newDiv, `⏳ Querying @${handle}'s feed`);
+  const { monthsBack } = await theRealBrowser.storage.sync.get();
+  const monthsBackDate = subMonths(now, monthsBack ?? 7);
+
   if (handle) {
     try {
-      const feed = await getData(new AtpAgent({ service: 'https://api.bsky.app' }), handle);
+      const feed = await getData(new AtpAgent({ service: 'https://api.bsky.app' }), handle, monthsBackDate);
       newDiv.innerText = '';
 
       let activityLevels;
@@ -65,10 +69,8 @@ async function queryFeed(targetDiv) {
         activityLevels = samples.join(",");
       }
 
-      const now = new Date();
-      const { monthsBack } = await theRealBrowser.storage.sync.get();
       const graphPayload = {
-        'range-start': formatDateForAttrs(subMonths(now, monthsBack ?? 7)),
+        'range-start': formatDateForAttrs(monthsBackDate),
         'range-end': formatDateForAttrs(now),
         'activity-data': feed.data.reduce(
           (a, { date, count }) => ([...a, ...Array.from({ length: count }, () => date)]), []
@@ -97,7 +99,7 @@ async function waitForHydration() {
   const { includeButton } = await theRealBrowser.storage.sync.get();
   // profiles without any description won't get profileHeaderDescription, but all have profileHeaderFollowsButton
   // profileHeaderDescription is better positioning for the former profile pages, so we try it first
-  const targetDiv = document.querySelector('div[data-testid=profileHeaderDescription]') ?? 
+  const targetDiv = document.querySelector('div[data-testid=profileHeaderDescription]') ??
     document.querySelector('a[data-testid=profileHeaderFollowsButton]')?.parentElement;
 
   if (!targetDiv) {
