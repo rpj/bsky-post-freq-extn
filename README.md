@@ -37,6 +37,8 @@ Borrows **significantly** from:
 
 ## TBD
 
-* Inject summaries into Starter Packs
-* Make it work properly in Firefox
-* Add option to include reposts
+- [x] Use and show activity only for the chosen time window
+- [ ] Inject summaries into Starter Packs
+- [ ] Make it work properly in Firefox
+- [ ] Add option to include reposts
+- [ ] Publish to Chrome Web Store!
