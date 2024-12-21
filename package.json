@@ -7,7 +7,7 @@
   "repository": {
     "url": "https://github.com/rpj/bsky-post-freq-extn"
   },
-  "version": "0.0.0",
+  "version": "1.0.1",
   "scripts": {
     "build": "rm -fr dist && tsc && vite build && node tools/post-build.js && cp src/popup.* dist/src/ && cp src/pico.blue.min.css dist/src/ && rm dist/assets/content-script-loader.content.js*",
     "lint": "npx semistandard --fix **/*.js"
