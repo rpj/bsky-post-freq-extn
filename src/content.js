@@ -120,6 +120,10 @@ async function waitForHydration() {
   targetDiv.insertAdjacentElement('afterend', goButton);
 }
 
-// Bluesky hydrates the DOM after the initial load ends, which is what `"run_at": "document_end"`
-// in the manifest maps to. Accordingly we have to poll for the hydrated component we're waiting for
-setTimeout(waitForHydration, 250);
+const [_empty, firstPath] = window.location.pathname.split("/");
+
+if (firstPath === "profile") {
+  // Bluesky hydrates the DOM after the initial load ends, which is what `"run_at": "document_end"`
+  // in the manifest maps to. Accordingly we have to poll for the hydrated component we're waiting for
+  setTimeout(waitForHydration, 250);
+}

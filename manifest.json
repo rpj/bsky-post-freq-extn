@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Bluesky User Activity Graph",
   "description": "Shows a Bluesky user's activity graph embedded in their profile page",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "action": {
     "default_icon": "favicon.png",
     "default_popup": "src/popup.html"
